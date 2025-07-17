@@ -1,0 +1,57 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@import",
+      "description": "Import CSS files or modules"
+    },
+    {
+      "name": "@layer",
+      "description": "Define a cascade layer"
+    },
+    {
+      "name": "@theme",
+      "description": "Define theme tokens for Tailwind CSS v4"
+    },
+    {
+      "name": "@apply",
+      "description": "Apply Tailwind CSS utilities"
+    },
+    {
+      "name": "@screen",
+      "description": "Apply styles at specific breakpoints"
+    },
+    {
+      "name": "@variants",
+      "description": "Generate variants for utilities"
+    },
+    {
+      "name": "@responsive",
+      "description": "Generate responsive variants"
+    },
+    {
+      "name": "@hover",
+      "description": "Generate hover variants"
+    },
+    {
+      "name": "@focus",
+      "description": "Generate focus variants"
+    },
+    {
+      "name": "@active",
+      "description": "Generate active variants"
+    },
+    {
+      "name": "@disabled",
+      "description": "Generate disabled variants"
+    },
+    {
+      "name": "@group",
+      "description": "Generate group variants"
+    },
+    {
+      "name": "@peer",
+      "description": "Generate peer variants"
+    }
+  ]
+}
