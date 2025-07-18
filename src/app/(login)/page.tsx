@@ -17,10 +17,24 @@ function FlameLogo({ className = "w-10 h-10" }: { className?: string }) {
 }
 
 export default function LogIn() {
-  const [state, action] = useActionState(handleForm, { errors: [] });
+  const [state, action] = useActionState(handleForm, {
+    fieldErrors: {},
+    values: {},
+  });
 
-  const passwordErrors = state?.errors ?? [];
-  const isSuccess = state?.success ?? false;
+  const {
+    fieldErrors: {
+      email: emailErrors = [],
+      username: usernameErrors = [],
+      password: passwordErrors = [],
+    } = {},
+    values: {
+      email: emailValue = "",
+      username: usernameValue = "",
+      password: passwordValue = "",
+    } = {},
+    success: isSuccess = false,
+  } = state ?? {};
 
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-bg-page px-4">
@@ -39,7 +53,8 @@ export default function LogIn() {
           placeholder="nico@nomad.com"
           required={true}
           autoComplete="email"
-          errors={[]}
+          errors={emailErrors}
+          defaultValue={emailValue}
           icon={<EnvelopeIcon />}
         />
 
@@ -50,7 +65,8 @@ export default function LogIn() {
           placeholder="nico"
           required={true}
           autoComplete="username"
-          errors={[]}
+          errors={usernameErrors}
+          defaultValue={usernameValue}
           icon={<UserIcon />}
         />
 
@@ -62,6 +78,7 @@ export default function LogIn() {
           required={true}
           autoComplete="current-password"
           errors={passwordErrors}
+          defaultValue={passwordValue}
           icon={<LockClosedIcon />}
         />
 
