@@ -6,6 +6,7 @@ import FormBtn from "@/components/form-btn";
 import FormInput from "@/components/form-input";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { FireIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 function FlameLogo({ className = "w-10 h-10" }: { className?: string }) {
   return <FireIcon className={`${className} text-accent-pink`} />;
@@ -51,6 +52,16 @@ export default function LogIn() {
         />
         <FormBtn text="Log in" />
       </form>
+
+      <div className="mt-6 text-center">
+        <span className="text-gray-600 text-sm">계정이 없나요? </span>
+        <Link
+          href="/create-account"
+          className="text-accent-pink text-sm font-medium hover:underline"
+        >
+          회원가입
+        </Link>
+      </div>
     </div>
   );
 }

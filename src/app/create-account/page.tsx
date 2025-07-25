@@ -10,6 +10,7 @@ import { FireIcon } from "@heroicons/react/24/solid";
 import { createAccount } from "./actions";
 import FormBtn from "@/components/form-btn";
 import FormInput from "@/components/form-input";
+import Link from "next/link";
 
 function FlameLogo({ className = "w-10 h-10" }: { className?: string }) {
   return <FireIcon className={`${className} text-accent-pink`} />;
@@ -82,6 +83,16 @@ export default function CreateAccount() {
         />
         <FormBtn text="Create account" />
       </form>
+
+      <div className="mt-6 text-center">
+        <span className="text-gray-600 text-sm">이미 계정이 있나요? </span>
+        <Link
+          href="/login"
+          className="text-accent-pink text-sm font-medium hover:underline"
+        >
+          로그인
+        </Link>
+      </div>
     </div>
   );
 }

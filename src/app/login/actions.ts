@@ -41,7 +41,7 @@ export async function handleForm(
     email: formData.get("email"),
     password: formData.get("password"),
   };
-  const result = await formSchema.safeParse(data);
+  const result = await formSchema.spa(data);
   if (!result.success) {
     return z.flattenError(result.error);
   } else {
@@ -62,7 +62,7 @@ export async function handleForm(
       const session = await getSession();
       session.id = user!.id;
       await session.save();
-      redirect("/profile");
+      redirect("/");
     } else {
       return {
         fieldErrors: {

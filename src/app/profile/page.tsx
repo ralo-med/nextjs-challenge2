@@ -11,10 +11,6 @@ function FlameLogo({ className = "w-10 h-10" }: { className?: string }) {
 export default async function Profile() {
   const session = await getSession();
 
-  if (!session.id) {
-    redirect("/");
-  }
-
   const user = await db.user.findUnique({
     where: {
       id: session.id,

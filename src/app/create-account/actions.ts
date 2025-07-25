@@ -111,6 +111,6 @@ export async function createAccount(
     const session = await getSession();
     session.id = user.id;
     await session.save();
-    redirect("/profile");
+    redirect("/");
   }
 }
