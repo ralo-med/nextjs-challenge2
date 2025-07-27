@@ -1,7 +1,9 @@
 import { FireIcon } from "@heroicons/react/24/solid";
 import db from "@/lib/db";
+import getSession from "@/lib/session";
 import Pagination from "@/components/pagination";
-import Link from "next/link";
+import AddTweet from "@/components/add-tweet";
+import TweetItem from "@/components/tweet-item";
 
 const PAGE_SIZE = 10;
 
@@ -12,10 +14,13 @@ function FlameLogo({ className = "w-10 h-10" }: { className?: string }) {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const page = Number(searchParams?.page) > 0 ? Number(searchParams.page) : 1;
+  const params = await searchParams;
+  const page = Number(params?.page) > 0 ? Number(params.page) : 1;
   const skip = (page - 1) * PAGE_SIZE;
+
+  const session = await getSession();
 
   const [tweets, totalCount] = await Promise.all([
     db.tweet.findMany({
@@ -26,6 +31,7 @@ export default async function Home({
         id: true,
         tweet: true,
         created_at: true,
+        userId: true,
         user: {
           select: {
             username: true,
@@ -53,23 +59,19 @@ export default async function Home({
         </div>
 
         <div className="flex w-full flex-col gap-3">
+          {/* 새 트윗 작성 폼 */}
+          <AddTweet />
           {/* 페이징 네비게이션 */}
           <Pagination currentPage={page} totalPages={totalPages} />
           {/* 트윗 목록 렌더링 */}
           <ul className="w-full space-y-4">
             {tweets.map((tweet) => (
-              <li key={tweet.id}>
-                <Link
-                  href={`/tweets/${tweet.id}?page=${page}`}
-                  className="block bg-white rounded-lg p-4 shadow hover:bg-gray-100 transition"
-                >
-                  <div className="font-semibold">{tweet.user?.username}</div>
-                  <div className="text-gray-800">{tweet.tweet}</div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    {new Date(tweet.created_at).toLocaleString()}
-                  </div>
-                </Link>
-              </li>
+              <TweetItem
+                key={tweet.id}
+                tweet={tweet}
+                currentPage={page}
+                isAuthor={session.id === tweet.userId}
+              />
             ))}
           </ul>
         </div>
