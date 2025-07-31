@@ -3,7 +3,7 @@
 import { z } from "zod";
 import db from "@/lib/db";
 import getSession from "@/lib/session";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const tweetSchema = z.object({
   tweet: z
@@ -51,6 +51,7 @@ export async function addTweet(_: unknown, formData: FormData) {
     },
   });
   revalidatePath("/");
+  revalidateTag("tweet-detail");
   return { success: true };
 }
 
@@ -92,6 +93,29 @@ export async function addReply(tweetId: number, formData: FormData) {
   });
 
   revalidatePath(`/tweets/${tweetId}`);
+  revalidateTag("tweet-detail");
+  return { success: true };
+}
+
+export async function deleteReply(replyId: number) {
+  const session = await getSession();
+
+  const reply = await db.reply.findUnique({
+    where: { id: replyId },
+    include: { user: true, tweet: true },
+  });
+
+  if (!reply) {
+    return { error: "답글을 찾을 수 없습니다" };
+  }
+
+  if (reply.userId !== session.id) {
+    return { error: "삭제 권한이 없습니다" };
+  }
+
+  await db.reply.delete({ where: { id: replyId } });
+  revalidatePath(`/tweets/${reply.tweetId}`);
+  revalidateTag("tweet-detail");
   return { success: true };
 }
 
@@ -113,6 +137,7 @@ export async function deleteTweet(tweetId: number) {
 
   await db.tweet.delete({ where: { id: tweetId } });
   revalidatePath("/");
+  revalidateTag("tweet-detail");
   return { success: true };
 }
 
@@ -153,6 +178,7 @@ export async function likeTweet(tweetId: number) {
 
   revalidatePath("/");
   revalidatePath(`/tweets/${tweetId}`);
+  revalidateTag("tweet-detail");
   return { success: true };
 }
 
@@ -183,5 +209,6 @@ export async function dislikeTweet(tweetId: number) {
 
   revalidatePath("/");
   revalidatePath(`/tweets/${tweetId}`);
+  revalidateTag("tweet-detail");
   return { success: true };
 }

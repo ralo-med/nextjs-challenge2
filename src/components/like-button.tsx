@@ -34,10 +34,18 @@ export default function LikeButton({
       reducerFn(undefined);
     });
 
-    if (state.isLiked) {
-      await dislikeTweet(tweetId);
-    } else {
-      await likeTweet(tweetId);
+    try {
+      if (state.isLiked) {
+        await dislikeTweet(tweetId);
+      } else {
+        await likeTweet(tweetId);
+      }
+    } catch (error) {
+      console.error("Like action failed:", error);
+      // 에러 발생 시 optimistic 업데이트를 되돌림
+      startTransition(() => {
+        reducerFn(undefined);
+      });
     }
   };
 

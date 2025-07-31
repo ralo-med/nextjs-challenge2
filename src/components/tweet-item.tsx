@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { TrashIcon } from "@heroicons/react/24/outline";
 import { deleteTweet } from "@/app/(tweet-actions)/actions";
 import TimeAgo from "./time-ago";
 import LikeButton from "./like-button";
+import DeleteButton from "./delete-button";
 
 interface TweetItemProps {
   tweet: {
@@ -31,14 +31,12 @@ export default function TweetItem({
   isAuthor,
   currentUserId,
 }: TweetItemProps) {
-  const handleDelete = async () => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      await deleteTweet(tweet.id);
-    }
-  };
-
   // 현재 사용자가 이 트윗을 좋아요했는지 확인
   const isLiked = Array.isArray(tweet.likes) && tweet.likes.length > 0;
+
+  const handleDeleteTweet = async () => {
+    await deleteTweet(tweet.id);
+  };
 
   return (
     <li className="relative">
@@ -62,15 +60,11 @@ export default function TweetItem({
           />
         )}
 
-        {isAuthor && (
-          <button
-            onClick={handleDelete}
-            className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
-            title="삭제"
-          >
-            <TrashIcon className="w-4 h-4" />
-          </button>
-        )}
+        <DeleteButton
+          onDelete={handleDeleteTweet}
+          isAuthor={isAuthor}
+          title="트윗 삭제"
+        />
       </div>
     </li>
   );
