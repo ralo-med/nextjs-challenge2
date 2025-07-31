@@ -37,6 +37,21 @@ export default async function Home({
             username: true,
           },
         },
+        likes: session.id
+          ? {
+              where: {
+                userId: session.id,
+              },
+              select: {
+                id: true,
+              },
+            }
+          : false,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
     }),
     db.tweet.count(),
@@ -71,6 +86,7 @@ export default async function Home({
                 tweet={tweet}
                 currentPage={page}
                 isAuthor={session.id === tweet.userId}
+                currentUserId={session.id}
               />
             ))}
           </ul>
