@@ -19,17 +19,23 @@ export default function LikeButton({
   const [state, reducerFn] = useOptimistic(
     { isLiked, likeCount },
     (previousState, payload) => {
-      console.log("Reducer called with payload:", payload);
+      console.log(
+        "Optimistic update - Previous state:",
+        previousState,
+        "Payload:",
+        payload
+      );
       return {
         isLiked: !previousState.isLiked,
         likeCount: previousState.isLiked
-          ? Math.max(0, previousState.likeCount - 1) // 음수 방지
+          ? Math.max(0, previousState.likeCount - 1)
           : previousState.likeCount + 1,
       };
     }
   );
 
   const onClick = async () => {
+    // Optimistic update 즉시 적용
     startTransition(() => {
       reducerFn(undefined);
     });

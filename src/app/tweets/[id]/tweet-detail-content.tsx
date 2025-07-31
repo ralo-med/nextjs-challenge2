@@ -6,7 +6,7 @@ import AddTweet from "@/components/add-tweet";
 import TimeAgo from "@/components/time-ago";
 import LikeButton from "@/components/like-button";
 import DeleteButton from "@/components/delete-button";
-import ReplyList from "@/components/reply-list";
+import RepliesSuspense from "@/components/reply-list";
 import { deleteTweet } from "@/app/(tweet-actions)/actions";
 
 interface Reply {
@@ -134,8 +134,8 @@ export default function TweetDetailContent({
             </div>
           </div>
 
-          {/* 답글 목록 - 각각 별도 상자 */}
-          <ReplyList
+          {/* 답글 목록 - Suspense로 감싸기 */}
+          <RepliesSuspense
             replies={optimisticState.replies}
             currentUserId={session.id}
           />

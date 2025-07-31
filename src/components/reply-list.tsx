@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, startTransition } from "react";
+import { Suspense, useOptimistic, startTransition } from "react";
 import TimeAgo from "./time-ago";
 import DeleteButton from "./delete-button";
 import { deleteReply } from "@/app/(tweet-actions)/actions";
@@ -15,18 +15,19 @@ interface Reply {
   userId: number;
 }
 
-interface ReplyListProps {
+interface RepliesSuspenseProps {
   replies: Reply[];
   currentUserId: number;
 }
 
-export default function ReplyList({ replies, currentUserId }: ReplyListProps) {
+function ReplyListContent({ replies, currentUserId }: RepliesSuspenseProps) {
   const [optimisticState, addOptimisticReply] = useOptimistic(
     { replies },
     (
       state,
       action: { type: "add" | "delete"; reply: Reply; replyId?: number }
     ) => {
+      console.log("Reply optimistic update:", action);
       if (action.type === "add") {
         return {
           replies: [action.reply, ...state.replies],
@@ -53,10 +54,23 @@ export default function ReplyList({ replies, currentUserId }: ReplyListProps) {
         const isAuthor = reply.userId === currentUserId;
 
         const handleDeleteReply = async () => {
-          await deleteReply(reply.id);
+          try {
+            await deleteReply(reply.id);
+          } catch (error) {
+            console.error("Delete reply failed:", error);
+            // 에러 발생 시 optimistic 업데이트 되돌리기
+            startTransition(() => {
+              addOptimisticReply({
+                type: "delete",
+                reply,
+                replyId: reply.id,
+              });
+            });
+          }
         };
 
         const handleOptimisticDelete = () => {
+          // Optimistic update - 즉시 UI에서 제거
           startTransition(() => {
             addOptimisticReply({
               type: "delete",
@@ -93,5 +107,28 @@ export default function ReplyList({ replies, currentUserId }: ReplyListProps) {
         );
       })}
     </div>
+  );
+}
+
+export default function RepliesSuspense({
+  replies,
+  currentUserId,
+}: RepliesSuspenseProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full space-y-3">
+          <h3 className="text-lg font-semibold text-gray-800">
+            답글 로딩 중...
+          </h3>
+          <div className="ml-6 bg-white rounded-lg p-4 shadow-md border-l-4 border-accent-pink animate-pulse">
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-3 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      }
+    >
+      <ReplyListContent replies={replies} currentUserId={currentUserId} />
+    </Suspense>
   );
 }

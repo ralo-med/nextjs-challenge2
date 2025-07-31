@@ -40,6 +40,10 @@ export async function addTweet(_: unknown, formData: FormData) {
   }
 
   const session = await getSession();
+
+  // 2초 지연 추가 (옵티미스틱 업데이트 확인용)
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
   await db.tweet.create({
     data: {
       tweet: result.data.tweet,
@@ -76,6 +80,9 @@ export async function addReply(tweetId: number, formData: FormData) {
     return { error: "트윗을 찾을 수 없습니다" };
   }
 
+  // 2초 지연 추가 (옵티미스틱 업데이트 확인용)
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
   await db.reply.create({
     data: {
       content: result.data.content,
@@ -92,7 +99,8 @@ export async function addReply(tweetId: number, formData: FormData) {
     },
   });
 
-  revalidatePath(`/tweets/${tweetId}`);
+  // 답글 추가 시에는 해당 트윗 상세 페이지의 캐시만 무효화
+  // 페이지 전체 새로고침 방지
   revalidateTag("tweet-detail");
   return { success: true };
 }
@@ -114,7 +122,6 @@ export async function deleteReply(replyId: number) {
   }
 
   await db.reply.delete({ where: { id: replyId } });
-  revalidatePath(`/tweets/${reply.tweetId}`);
   revalidateTag("tweet-detail");
   return { success: true };
 }
