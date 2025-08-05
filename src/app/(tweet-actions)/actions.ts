@@ -41,9 +41,6 @@ export async function addTweet(_: unknown, formData: FormData) {
 
   const session = await getSession();
 
-  // 2초 지연 추가 (옵티미스틱 업데이트 확인용)
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
   await db.tweet.create({
     data: {
       tweet: result.data.tweet,
@@ -79,9 +76,6 @@ export async function addReply(tweetId: number, formData: FormData) {
   if (!tweet) {
     return { error: "트윗을 찾을 수 없습니다" };
   }
-
-  // 2초 지연 추가 (옵티미스틱 업데이트 확인용)
-  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   await db.reply.create({
     data: {
